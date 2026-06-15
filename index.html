@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ARES | Tracker 60 días</title>
+  <style>
+    :root {
+      --bg: #080808;
+      --panel: #141414;
+      --panel2: #1e1e1e;
+      --panel3: #111;
+      --text: #f5f5f5;
+      --muted: #b9b9b9;
+      --soft: #7f7f7f;
+      --line: #2d2d2d;
+      --accent: #d71920;
+      --accent2: #ff4d4d;
+      --good: #46d36f;
+      --warn: #ffcc4d;
+      --bad: #ff5e5e;
+      --info: #6aa9ff;
+      --radius: 22px;
+      --shadow: 0 18px 45px rgba(0, 0, 0, .42);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(215, 25, 32, .17), transparent 32%),
+        radial-gradient(circle at 85% 5%, rgba(255, 77, 77, .08), transparent 28%),
+        linear-gradient(180deg, #050505, #101010 52%, #050505);
+      min-height: 100vh;
+    }
+
+    .wrap {
+      width: min(1220px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 26px 0 66px;
+    }
+
+    .card {
+      background: rgba(20,20,20,.94);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      backdrop-filter: blur(10px);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.12fr .88fr;
+      gap: 18px;
+      align-items: stretch;
+      margin-bottom: 18px;
+    }
+
+    .badge {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(215,25,32,.12);
+      border: 1px solid rgba(215,25,32,.45);
+      color: #ffd9d9;
+      font-weight: 850;
+      font-size: 13px;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-size: clamp(42px, 8vw, 92px);
+      line-height: .9;
+      margin: 0 0 14px;
+      letter-spacing: -4px;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 24px;
+      letter-spacing: -.5px;
+    }
+
+    h3 {
+      margin: 18px 0 10px;
+      font-size: 17px;
+    }
+
+    p, li {
+      color: var(--muted);
+      line-height: 1.56;
+    }
+
+    b, strong { color: var(--text); }
+
+    .lead {
+      max-width: 780px;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.58;
+    }
+
+    .quote {
+      margin-top: 20px;
+      border-left: 4px solid var(--accent);
+      padding: 12px 0 12px 16px;
+      font-weight: 900;
+      font-size: 19px;
+    }
+
+    .grid { display: grid; gap: 18px; }
+    .two { grid-template-columns: 1fr 1fr; }
+    .three { grid-template-columns: repeat(3, 1fr); }
+    .four { grid-template-columns: repeat(4, 1fr); }
+
+    .stat {
+      background: var(--panel2);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 15px;
+      min-height: 88px;
+    }
+
+    .stat b {
+      display: block;
+      font-size: 30px;
+      letter-spacing: -1px;
+      line-height: 1.1;
+    }
+
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: 12.5px;
+      margin-top: 6px;
+      font-weight: 750;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 18px 0;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      padding: 12px 0;
+      background: linear-gradient(180deg, rgba(8,8,8,.98), rgba(8,8,8,.82));
+      backdrop-filter: blur(10px);
+    }
+
+    button, .tab-btn, .file-label {
+      border: 1px solid var(--line);
+      background: var(--panel2);
+      color: var(--text);
+      padding: 11px 14px;
+      border-radius: 14px;
+      cursor: pointer;
+      font-weight: 850;
+      transition: .15s ease;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    button:hover, .tab-btn:hover, .file-label:hover { transform: translateY(-1px); }
+    button.primary, .tab-btn.active { background: linear-gradient(135deg, var(--accent), #8f1217); border-color: rgba(255,255,255,.12); }
+    button.good { background: rgba(70,211,111,.13); border-color: rgba(70,211,111,.44); }
+    button.danger { background: rgba(255,94,94,.12); border-color: rgba(255,94,94,.44); }
+    button.info { background: rgba(106,169,255,.12); border-color: rgba(106,169,255,.40); }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    .progress {
+      height: 14px;
+      border-radius: 999px;
+      background: #0c0c0c;
+      border: 1px solid var(--line);
+      overflow: hidden;
+    }
+
+    .bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transition: width .25s ease;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      background: #0e0e0e;
+      border: 1px solid var(--line);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 12px 13px;
+      font: inherit;
+      outline: none;
+    }
+
+    textarea { min-height: 110px; resize: vertical; }
+
+    .field {
+      display: grid;
+      gap: 7px;
+      margin-bottom: 12px;
+    }
+
+    .field label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .hint {
+      color: var(--soft);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .checklist {
+      display: grid;
+      gap: 10px;
+    }
+
+    .check {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 13px;
+      background: var(--panel2);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+    }
+
+    .check label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 820;
+      cursor: pointer;
+      line-height: 1.25;
+    }
+
+    input[type="checkbox"] {
+      width: 22px;
+      height: 22px;
+      accent-color: var(--accent);
+    }
+
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 8px;
+    }
+
+    .day {
+      aspect-ratio: 1/1;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--panel2);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      padding: 0;
+    }
+
+    .day::before {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: var(--fill, 0%);
+      width: 100%;
+      background: rgba(215,25,32,.24);
+      z-index: 0;
+    }
+
+    .day span, .day small { position: relative; z-index: 1; }
+    .day small { position: absolute; bottom: 6px; color: var(--muted); font-size: 10px; }
+    .day.today { box-shadow: 0 0 0 2px rgba(215,25,32,.65); }
+    .day.done { border-color: rgba(70,211,111,.58); }
+    .day.partial { border-color: rgba(255,204,77,.55); }
+    .day.miss { border-color: rgba(255,94,94,.48); }
+
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+
+    .pill {
+      display: inline-flex;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-weight: 850;
+      font-size: 12px;
+      margin: 3px;
+    }
+
+    .rules { display: grid; gap: 10px; }
+
+    .rule {
+      padding: 14px;
+      background: var(--panel2);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .chart {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #0d0d0d;
+      padding: 16px;
+      overflow-x: auto;
+    }
+
+    .bars {
+      display: flex;
+      align-items: end;
+      gap: 8px;
+      min-height: 190px;
+      padding-bottom: 24px;
+    }
+
+    .col {
+      min-width: 20px;
+      background: linear-gradient(180deg, var(--accent2), var(--accent));
+      border-radius: 8px 8px 3px 3px;
+      position: relative;
+      height: 4px;
+    }
+
+    .col::after {
+      content: attr(data-label);
+      position: absolute;
+      bottom: -22px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .wide-bars {
+      display: grid;
+      gap: 12px;
+    }
+
+    .wide-row {
+      display: grid;
+      grid-template-columns: 170px 1fr 62px;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-weight: 820;
+    }
+
+    .wide-track {
+      height: 14px;
+      background: #0b0b0b;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .wide-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+
+    .habit-card {
+      background: var(--panel2);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 15px;
+    }
+
+    .habit-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+      align-items: start;
+    }
+
+    .mini {
+      display: flex;
+      gap: 4px;
+      align-items: end;
+      min-height: 54px;
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+      overflow: hidden;
+    }
+
+    .mini-block {
+      width: 10px;
+      height: 34px;
+      border-radius: 4px;
+      background: rgba(255,94,94,.35);
+      border: 1px solid rgba(255,255,255,.05);
+    }
+
+    .mini-block.ok { background: rgba(70,211,111,.65); }
+    .mini-block.empty { background: rgba(255,255,255,.06); }
+
+    .list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .list-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      background: var(--panel2);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px;
+    }
+
+    .hidden { display: none; }
+
+    .sync-box {
+      border: 1px solid rgba(106,169,255,.35);
+      background: rgba(106,169,255,.08);
+      border-radius: 18px;
+      padding: 14px;
+      color: #dceaff;
+    }
+
+    .sync-status {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      min-height: 20px;
+    }
+
+    footer {
+      margin-top: 26px;
+      text-align: center;
+      color: var(--soft);
+      font-size: 13px;
+    }
+
+    @media (max-width: 920px) {
+      .hero, .two, .three, .four { grid-template-columns: 1fr; }
+      .calendar { grid-template-columns: repeat(5, 1fr); }
+      .wide-row { grid-template-columns: 1fr; gap: 6px; }
+      h1 { letter-spacing: -2px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <div class="card">
+        <div class="badge">ARES · 60 días de reconstrucción</div>
+        <h1>ARES</h1>
+        <div class="lead">
+          Sistema medible para cuerpo, azúcar, pureza, Dios, inglés, dinero, orden y puntualidad.
+          Tu estándar laboral: entrada 7:00 a.m.; llegada ARES: <strong>6:50 a.m. o antes</strong>.
+        </div>
+        <div class="quote">“Hoy no persigo atención. Hoy conquisto mi carácter.”</div>
+      </div>
+
+      <div class="card">
+        <h2>Estado general</h2>
+        <div class="grid two">
+          <div class="stat"><b id="statDay">1/60</b><span>Día seleccionado</span></div>
+          <div class="stat"><b id="statTotal">0</b><span>Puntos totales</span></div>
+          <div class="stat"><b id="statPercent">0%</b><span>Progreso total</span></div>
+          <div class="stat"><b id="statStreak">0</b><span>Racha activa 6+/8</span></div>
+        </div>
+        <h3>Avance sobre 480 puntos posibles</h3>
+        <div class="progress"><div class="bar" id="progressBar"></div></div>
+      </div>
+    </section>
+
+    <nav class="tabs">
+      <button class="tab-btn active" data-tab="today">Hoy</button>
+      <button class="tab-btn" data-tab="calendar">Calendario</button>
+      <button class="tab-btn" data-tab="metrics">Métricas</button>
+      <button class="tab-btn" data-tab="sections">Por sección</button>
+      <button class="tab-btn" data-tab="plan">Plan</button>
+      <button class="tab-btn" data-tab="sync">GitHub</button>
+    </nav>
+
+    <section id="today" class="screen active">
+      <div class="grid two">
+        <div class="card">
+          <h2>Registro diario</h2>
+          <div class="field">
+            <label>Día del proyecto</label>
+            <select id="daySelect"></select>
+          </div>
+          <div class="checklist" id="checklist"></div>
+
+          <h3>Notas</h3>
+          <div class="field">
+            <label>Qué hice bien</label>
+            <textarea id="wins" placeholder="Ejemplo: llegué temprano, entrené, no tomé refresco..."></textarea>
+          </div>
+          <div class="field">
+            <label>Qué debo corregir mañana</label>
+            <textarea id="fixes" placeholder="Ejemplo: dormir antes, dejar ropa lista, no revisar redes..."></textarea>
+          </div>
+
+          <div class="actions">
+            <button class="primary" id="saveBtn">Guardar día</button>
+            <button class="good" id="markPerfectBtn">Marcar 8/8</button>
+            <button class="danger" id="clearDayBtn">Limpiar día</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Métricas rápidas</h2>
+          <div class="grid two">
+            <div class="field">
+              <label>Hora de llegada al trabajo</label>
+              <input id="arrival" type="time" />
+              <div class="hint">Si registras 06:50 o antes, se marca puntualidad.</div>
+            </div>
+            <div class="field">
+              <label>Hora de dormir</label>
+              <input id="sleep" type="time" />
+            </div>
+            <div class="field">
+              <label>Minutos de inglés</label>
+              <input id="english" type="number" min="0" step="5" placeholder="30" />
+              <div class="hint">Si registras 30 o más, se marca inglés.</div>
+            </div>
+            <div class="field">
+              <label>Dinero ahorrado</label>
+              <input id="savedMoney" type="number" min="0" step="1" placeholder="20" />
+            </div>
+            <div class="field">
+              <label>Gasto total del día</label>
+              <input id="spentMoney" type="number" min="0" step="1" placeholder="0" />
+            </div>
+            <div class="field">
+              <label>Peso corporal</label>
+              <input id="weight" type="number" min="0" step="0.1" placeholder="Opcional" />
+            </div>
+            <div class="field">
+              <label>Contenido publicado</label>
+              <input id="contentCount" type="number" min="0" step="1" placeholder="0" />
+            </div>
+            <div class="field">
+              <label>Lectura bíblica</label>
+              <input id="bible" type="text" placeholder="Juan 1, Salmo 23..." />
+            </div>
+          </div>
+
+          <h3>Puntaje de hoy</h3>
+          <div class="stat"><b id="todayScore">0/8</b><span>Cuenta solo lo que cumpliste de verdad.</span></div>
+
+          <h3>Regla de puntualidad</h3>
+          <div class="pill">Entrada: 7:00 a.m.</div>
+          <div class="pill">Objetivo: 6:50 a.m.</div>
+          <div class="pill">Punto si llegas 6:50 o antes</div>
+          <div class="pill">Noche anterior: ropa, llaves, cartera, mochila</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="calendar" class="screen">
+      <div class="card">
+        <h2>Calendario de 60 días</h2>
+        <p>Da clic en un día para editarlo. El relleno muestra el puntaje de ese día.</p>
+        <div class="calendar" id="calendarGrid"></div>
+      </div>
+    </section>
+
+    <section id="metrics" class="screen">
+      <div class="grid two">
+        <div class="card">
+          <h2>Métricas del proyecto</h2>
+          <div class="grid two">
+            <div class="stat"><b id="mRecorded">0</b><span>Días con registro</span></div>
+            <div class="stat"><b id="mPerfect">0</b><span>Días perfectos</span></div>
+            <div class="stat"><b id="mAverage">0/8</b><span>Promedio por día registrado</span></div>
+            <div class="stat"><b id="mCritical">—</b><span>Área más débil</span></div>
+            <div class="stat"><b id="mBest">—</b><span>Área más fuerte</span></div>
+            <div class="stat"><b id="mSaved">$0</b><span>Ahorro registrado</span></div>
+            <div class="stat"><b id="mEnglish">0</b><span>Minutos de inglés</span></div>
+            <div class="stat"><b id="mContent">0</b><span>Publicaciones</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Puntaje por día</h2>
+          <div class="chart"><div class="bars" id="scoreChart"></div></div>
+        </div>
+      </div>
+
+      <div class="grid two" style="margin-top:18px;">
+        <div class="card">
+          <h2>Cumplimiento por área</h2>
+          <div class="wide-bars" id="habitBars"></div>
+        </div>
+        <div class="card">
+          <h2>Fallas más repetidas</h2>
+          <div class="list" id="failList"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="sections" class="screen">
+      <div class="card">
+        <h2>Gráfica por cada sección</h2>
+        <p>Cada tarjeta muestra cumplimiento, fallas y últimos 14 días. Verde = cumplido. Rojo = registrado pero fallado. Gris = sin registro.</p>
+        <div class="grid two" id="sectionCards"></div>
+      </div>
+    </section>
+
+    <section id="plan" class="screen">
+      <div class="grid two">
+        <div class="card">
+          <h2>Las 8 áreas de ARES</h2>
+          <div class="rules">
+            <div class="rule"><b>1. Cuerpo:</b> entrenamiento o movimiento diario.</div>
+            <div class="rule"><b>2. Azúcar:</b> cero azúcar añadida. Fruta sí; refresco, pan dulce, galletas y postres no.</div>
+            <div class="rule"><b>3. Pureza:</b> cero contenido sexual, cero stalkear, celular fuera de la cama.</div>
+            <div class="rule"><b>4. Dios:</b> oración, Biblia y revisión honesta cada día.</div>
+            <div class="rule"><b>5. Inglés:</b> 30 minutos diarios.</div>
+            <div class="rule"><b>6. Dinero:</b> registrar gastos, ahorrar y hacer una acción útil.</div>
+            <div class="rule"><b>7. Orden:</b> cuarto, ropa, cartera, llaves y cosas listas.</div>
+            <div class="rule"><b>8. Puntualidad:</b> llegar al trabajo 6:50 a.m. o antes.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Manifiesto</h2>
+          <p>
+            Durante 60 días dejo de vivir por emoción y empiezo a vivir por disciplina.
+            No necesito mensajes para tener valor. No necesito una relación para dar lo mejor de mí.
+            No soy esclavo del azúcar, la lujuria, la pereza ni la tristeza.
+            Con Dios voy a formar un cuerpo más fuerte, una mente más clara y una vida con propósito.
+            No estoy esperando que alguien me rescate. Estoy construyendo al hombre que debo ser.
+          </p>
+
+          <h3>Regla contra recaídas</h3>
+          <div class="rule"><b>Nunca fallar dos veces seguidas.</b> Si caes, corriges el sistema y vuelves al camino al siguiente acto.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="sync" class="screen">
+      <div class="grid two">
+        <div class="card">
+          <h2>Almacenamiento local</h2>
+          <p>
+            Esta app ya guarda tus datos en este navegador. No debes configurar nada para eso.
+            Para respaldo, exporta JSON o CSV.
+          </p>
+          <div class="actions">
+            <button class="primary" id="exportJsonBtn">Exportar JSON</button>
+            <button id="exportCsvBtn">Exportar CSV</button>
+            <label class="file-label">
+              Importar JSON
+              <input id="importFile" class="hidden" type="file" accept=".json,application/json" />
+            </label>
+            <button class="danger" id="resetAllBtn">Borrar todo</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Sincronizar con GitHub</h2>
+          <div class="sync-box">
+            No pegues tu token en el código ni lo subas al repo. El token se usa solo en tu navegador.
+            Para mayor seguridad, usa un token fino con permisos mínimos de contenido del repositorio.
+          </div>
+
+          <div class="grid two" style="margin-top:14px;">
+            <div class="field">
+              <label>Usuario / owner</label>
+              <input id="ghOwner" placeholder="tu-usuario" />
+            </div>
+            <div class="field">
+              <label>Repositorio</label>
+              <input id="ghRepo" placeholder="ares-tracker" />
+            </div>
+            <div class="field">
+              <label>Rama</label>
+              <input id="ghBranch" placeholder="main" />
+            </div>
+            <div class="field">
+              <label>Ruta del archivo JSON</label>
+              <input id="ghPath" placeholder="data/ares-datos.json" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label>GitHub token</label>
+            <input id="ghToken" type="password" placeholder="Pega tu token solo cuando vayas a sincronizar" />
+            <div class="hint">No se guarda en el archivo. Puedes elegir guardarlo solo en esta sesión.</div>
+          </div>
+
+          <div class="actions">
+            <button class="info" id="saveGhConfigBtn">Guardar configuración</button>
+            <button class="primary" id="pushGithubBtn">Subir datos a GitHub</button>
+            <button id="pullGithubBtn">Cargar datos desde GitHub</button>
+            <button id="sessionTokenBtn">Guardar token en esta sesión</button>
+          </div>
+
+          <div class="sync-status" id="syncStatus"></div>
+
+          <h3>Cómo debe quedar en GitHub</h3>
+          <div class="rules">
+            <div class="rule">Tu sitio usa <b>index.html</b> para la página.</div>
+            <div class="rule">Tus métricas pueden guardarse en <b>data/ares-datos.json</b>.</div>
+            <div class="rule">Cada vez que presiones “Subir datos a GitHub”, la app actualiza ese JSON con un commit.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>ARES · Si se mide, se puede mejorar. Si se repite, se convierte en carácter.</footer>
+  </main>
+
+  <script>
+    const START_DATE = "2026-06-15";
+    const DAYS = 60;
+    const MAX_POINTS = 8;
+    const STORAGE_KEY = "ares_60_tracker_v2";
+    const GH_CONFIG_KEY = "ares_github_config_v1";
+    const GH_SESSION_TOKEN_KEY = "ares_github_token_session";
+
+    const habits = [
+      { id: "body", short: "Cuerpo", label: "Cuerpo: entrené o me moví" },
+      { id: "sugar", short: "Azúcar", label: "Cero azúcar añadida" },
+      { id: "purity", short: "Pureza", label: "Pureza: no alimenté la lujuria" },
+      { id: "god", short: "Dios", label: "Dios: oración + Biblia" },
+      { id: "englishHabit", short: "Inglés", label: "Inglés: 30 minutos" },
+      { id: "moneyHabit", short: "Dinero", label: "Dinero: acción útil o registro" },
+      { id: "order", short: "Orden", label: "Orden: cuarto, gastos o cosas listas" },
+      { id: "punctuality", short: "Puntualidad", label: "Puntualidad: llegué 6:50 a.m. o antes" }
+    ];
+
+    let state = loadState();
+    let selectedDay = getTodayProjectDay();
+
+    const $ = (id) => document.getElementById(id);
+
+    function blankDay(day) {
+      return {
+        day,
+        date: dateForDay(day),
+        habits: Object.fromEntries(habits.map(h => [h.id, false])),
+        arrival: "",
+        sleep: "",
+        english: "",
+        savedMoney: "",
+        spentMoney: "",
+        weight: "",
+        contentCount: "",
+        bible: "",
+        wins: "",
+        fixes: ""
+      };
+    }
+
+    function normalizeState(raw) {
+      const base = {
+        startDate: START_DATE,
+        lastUpdated: new Date().toISOString(),
+        days: Array.from({ length: DAYS }, (_, i) => blankDay(i + 1))
+      };
+      if (!raw || !Array.isArray(raw.days)) return base;
+      raw.days.forEach((d, i) => {
+        if (i >= DAYS) return;
+        base.days[i] = {
+          ...blankDay(i + 1),
+          ...d,
+          day: i + 1,
+          date: dateForDay(i + 1),
+          habits: { ...blankDay(i + 1).habits, ...(d.habits || {}) }
+        };
+      });
+      base.lastUpdated = raw.lastUpdated || base.lastUpdated;
+      return base;
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) return normalizeState(JSON.parse(raw));
+      } catch (e) {}
+      return normalizeState(null);
+    }
+
+    function saveState() {
+      state.lastUpdated = new Date().toISOString();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function dateForDay(day) {
+      const d = new Date(START_DATE + "T00:00:00");
+      d.setDate(d.getDate() + day - 1);
+      return d.toISOString().slice(0, 10);
+    }
+
+    function getTodayProjectDay() {
+      const now = new Date();
+      const start = new Date(START_DATE + "T00:00:00");
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const diff = Math.floor((today - start) / 86400000) + 1;
+      return Math.min(Math.max(diff, 1), DAYS);
+    }
+
+    function score(dayData) {
+      return Object.values(dayData.habits || {}).filter(Boolean).length;
+    }
+
+    function isRecorded(d) {
+      if (!d) return false;
+      if (score(d) > 0) return true;
+      const fields = ["arrival","sleep","english","savedMoney","spentMoney","weight","contentCount","bible","wins","fixes"];
+      return fields.some(id => String(d[id] || "").trim() !== "");
+    }
+
+    function formatMoney(n) {
+      const val = Number(n || 0);
+      return "$" + val.toLocaleString("es-MX");
+    }
+
+    function init() {
+      buildDaySelect();
+      buildChecklist();
+      buildCalendar();
+      loadSelectedDay();
+      loadGhConfig();
+      bindEvents();
+      renderAll();
+    }
+
+    function buildDaySelect() {
+      const select = $("daySelect");
+      select.innerHTML = "";
+      for (let i = 1; i <= DAYS; i++) {
+        const opt = document.createElement("option");
+        opt.value = i;
+        opt.textContent = `Día ${i} · ${dateForDay(i)}`;
+        select.appendChild(opt);
+      }
+      select.value = selectedDay;
+    }
+
+    function buildChecklist() {
+      const list = $("checklist");
+      list.innerHTML = "";
+      habits.forEach(h => {
+        const row = document.createElement("div");
+        row.className = "check";
+        row.innerHTML = `
+          <label>
+            <input type="checkbox" id="habit_${h.id}" />
+            <span>${h.label}</span>
+          </label>
+        `;
+        list.appendChild(row);
+      });
+    }
+
+    function buildCalendar() {
+      const grid = $("calendarGrid");
+      grid.innerHTML = "";
+      for (let i = 1; i <= DAYS; i++) {
+        const btn = document.createElement("button");
+        btn.className = "day";
+        btn.dataset.day = i;
+        btn.innerHTML = `<span>${i}</span><small>${dateForDay(i).slice(5)}</small>`;
+        btn.addEventListener("click", () => {
+          saveCurrentDay();
+          selectedDay = i;
+          $("daySelect").value = i;
+          switchTab("today");
+          loadSelectedDay();
+          renderAll();
+        });
+        grid.appendChild(btn);
+      }
+    }
+
+    function bindEvents() {
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+      });
+
+      $("daySelect").addEventListener("change", () => {
+        saveCurrentDay();
+        selectedDay = Number($("daySelect").value);
+        loadSelectedDay();
+        renderAll();
+      });
+
+      $("saveBtn").addEventListener("click", () => {
+        saveCurrentDay();
+        renderAll();
+        alert("Día guardado.");
+      });
+
+      $("markPerfectBtn").addEventListener("click", () => {
+        habits.forEach(h => $("habit_" + h.id).checked = true);
+        saveCurrentDay();
+        renderAll();
+      });
+
+      $("clearDayBtn").addEventListener("click", () => {
+        if (!confirm("¿Limpiar este día?")) return;
+        state.days[selectedDay - 1] = blankDay(selectedDay);
+        saveState();
+        loadSelectedDay();
+        renderAll();
+      });
+
+      $("exportJsonBtn").addEventListener("click", exportJson);
+      $("exportCsvBtn").addEventListener("click", exportCsv);
+      $("importFile").addEventListener("change", importJson);
+      $("resetAllBtn").addEventListener("click", resetAll);
+
+      $("saveGhConfigBtn").addEventListener("click", saveGhConfig);
+      $("sessionTokenBtn").addEventListener("click", saveTokenSession);
+      $("pushGithubBtn").addEventListener("click", pushToGithub);
+      $("pullGithubBtn").addEventListener("click", pullFromGithub);
+
+      [...document.querySelectorAll("input, textarea")].forEach(el => {
+        el.addEventListener("change", () => {
+          if (el.id.startsWith("gh")) return;
+          saveCurrentDay();
+          renderAll();
+        });
+      });
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
+      document.querySelectorAll(".screen").forEach(s => s.classList.toggle("active", s.id === tab));
+    }
+
+    function loadSelectedDay() {
+      const d = state.days[selectedDay - 1] || blankDay(selectedDay);
+      habits.forEach(h => $("habit_" + h.id).checked = !!d.habits[h.id]);
+      ["arrival","sleep","english","savedMoney","spentMoney","weight","contentCount","bible","wins","fixes"].forEach(id => {
+        $(id).value = d[id] || "";
+      });
+      updateTodayScore();
+    }
+
+    function saveCurrentDay() {
+      const d = state.days[selectedDay - 1] || blankDay(selectedDay);
+      d.habits = Object.fromEntries(habits.map(h => [h.id, $("habit_" + h.id).checked]));
+      ["arrival","sleep","english","savedMoney","spentMoney","weight","contentCount","bible","wins","fixes"].forEach(id => {
+        d[id] = $(id).value;
+      });
+
+      if (d.arrival && d.arrival <= "06:50") {
+        d.habits.punctuality = true;
+        $("habit_punctuality").checked = true;
+      }
+      if (Number(d.english || 0) >= 30) {
+        d.habits.englishHabit = true;
+        $("habit_englishHabit").checked = true;
+      }
+
+      state.days[selectedDay - 1] = d;
+      saveState();
+      updateTodayScore();
+    }
+
+    function updateTodayScore() {
+      const d = state.days[selectedDay - 1] || blankDay(selectedDay);
+      $("todayScore").textContent = `${score(d)}/${MAX_POINTS}`;
+    }
+
+    function renderAll() {
+      renderStats();
+      renderCalendar();
+      renderMetrics();
+      renderScoreChart();
+      renderHabitBars();
+      renderFailList();
+      renderSectionCards();
+    }
+
+    function renderStats() {
+      const total = state.days.reduce((sum, d) => sum + score(d), 0);
+      const max = DAYS * MAX_POINTS;
+      const percent = Math.round((total / max) * 100);
+      $("statDay").textContent = `${selectedDay}/60`;
+      $("statTotal").textContent = total;
+      $("statPercent").textContent = percent + "%";
+      $("statStreak").textContent = activeStreak();
+      $("progressBar").style.width = percent + "%";
+      updateTodayScore();
+    }
+
+    function activeStreak() {
+      let streak = 0;
+      for (const d of state.days) {
+        if (!isRecorded(d)) continue;
+        if (score(d) >= 6) streak++;
+        else streak = 0;
+      }
+      return streak;
+    }
+
+    function recordedDays() {
+      return state.days.filter(isRecorded);
+    }
+
+    function habitStats(habitId) {
+      const rec = recordedDays();
+      const completed = rec.filter(d => d.habits?.[habitId]).length;
+      const failed = rec.length - completed;
+      const pct = rec.length ? Math.round((completed / rec.length) * 100) : 0;
+      let streak = 0;
+      for (const d of state.days) {
+        if (!isRecorded(d)) continue;
+        if (d.habits?.[habitId]) streak++;
+        else streak = 0;
+      }
+      return { completed, failed, pct, streak, recorded: rec.length };
+    }
+
+    function renderCalendar() {
+      document.querySelectorAll(".day").forEach(btn => {
+        const day = Number(btn.dataset.day);
+        const d = state.days[day - 1];
+        const s = score(d);
+        btn.classList.remove("done", "partial", "miss", "today");
+        if (day === getTodayProjectDay()) btn.classList.add("today");
+        if (s === MAX_POINTS) btn.classList.add("done");
+        else if (s >= 4) btn.classList.add("partial");
+        else if (s > 0) btn.classList.add("miss");
+        btn.style.setProperty("--fill", `${(s / MAX_POINTS) * 100}%`);
+        btn.title = `Día ${day}: ${s}/8`;
+      });
+    }
+
+    function renderMetrics() {
+      const rec = recordedDays();
+      const totalScore = state.days.reduce((sum, d) => sum + score(d), 0);
+      const average = rec.length ? (totalScore / rec.length).toFixed(1) : "0";
+      const perfect = state.days.filter(d => score(d) === MAX_POINTS).length;
+      const saved = state.days.reduce((sum, d) => sum + Number(d.savedMoney || 0), 0);
+      const english = state.days.reduce((sum, d) => sum + Number(d.english || 0), 0);
+      const content = state.days.reduce((sum, d) => sum + Number(d.contentCount || 0), 0);
+
+      const stats = habits.map(h => ({ ...h, ...habitStats(h.id) })).sort((a,b) => b.pct - a.pct);
+      const best = rec.length ? stats[0].short : "—";
+      const critical = rec.length ? stats[stats.length - 1].short : "—";
+
+      $("mRecorded").textContent = rec.length;
+      $("mPerfect").textContent = perfect;
+      $("mAverage").textContent = `${average}/8`;
+      $("mCritical").textContent = critical;
+      $("mBest").textContent = best;
+      $("mSaved").textContent = formatMoney(saved);
+      $("mEnglish").textContent = english;
+      $("mContent").textContent = content;
+    }
+
+    function renderScoreChart() {
+      const chart = $("scoreChart");
+      chart.innerHTML = "";
+      state.days.forEach((d, idx) => {
+        const s = score(d);
+        const col = document.createElement("div");
+        col.className = "col";
+        col.style.height = Math.max(4, s * 20) + "px";
+        col.dataset.label = idx + 1;
+        col.title = `Día ${idx + 1}: ${s}/8`;
+        chart.appendChild(col);
+      });
+    }
+
+    function renderHabitBars() {
+      const box = $("habitBars");
+      box.innerHTML = "";
+      habits.forEach(h => {
+        const st = habitStats(h.id);
+        const row = document.createElement("div");
+        row.className = "wide-row";
+        row.innerHTML = `
+          <div>${h.short}</div>
+          <div class="wide-track"><div class="wide-fill" style="width:${st.pct}%"></div></div>
+          <div>${st.pct}%</div>
+        `;
+        box.appendChild(row);
+      });
+    }
+
+    function renderFailList() {
+      const box = $("failList");
+      box.innerHTML = "";
+      const rec = recordedDays().length;
+      const sorted = habits.map(h => ({ ...h, ...habitStats(h.id) })).sort((a,b) => b.failed - a.failed);
+      if (!rec) {
+        box.innerHTML = `<div class="rule">Aún no hay registros. Guarda tu primer día para ver tus fallas más repetidas.</div>`;
+        return;
+      }
+      sorted.forEach(h => {
+        const item = document.createElement("div");
+        item.className = "list-item";
+        item.innerHTML = `<span>${h.short}</span><strong>${h.failed} fallas</strong>`;
+        box.appendChild(item);
+      });
+    }
+
+    function renderSectionCards() {
+      const box = $("sectionCards");
+      box.innerHTML = "";
+      const today = getTodayProjectDay();
+      habits.forEach(h => {
+        const st = habitStats(h.id);
+        const start = Math.max(1, today - 13);
+        const blocks = [];
+        for (let day = start; day <= Math.min(DAYS, start + 13); day++) {
+          const d = state.days[day - 1];
+          let cls = "empty";
+          if (isRecorded(d)) cls = d.habits?.[h.id] ? "ok" : "bad";
+          blocks.push(`<div class="mini-block ${cls}" title="Día ${day}: ${cls === "ok" ? "cumplido" : cls === "bad" ? "fallado" : "sin registro"}"></div>`);
+        }
+
+        const card = document.createElement("div");
+        card.className = "habit-card";
+        card.innerHTML = `
+          <div class="habit-head">
+            <div>
+              <strong>${h.short}</strong>
+              <div class="hint">${h.label}</div>
+            </div>
+            <div class="pill">${st.pct}%</div>
+          </div>
+          <div class="grid three">
+            <div class="stat"><b>${st.completed}</b><span>Cumplidos</span></div>
+            <div class="stat"><b>${st.failed}</b><span>Fallados</span></div>
+            <div class="stat"><b>${st.streak}</b><span>Racha</span></div>
+          </div>
+          <div class="mini">${blocks.join("")}</div>
+        `;
+        box.appendChild(card);
+      });
+    }
+
+    function download(filename, content, type) {
+      const blob = new Blob([content], { type });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function exportJson() {
+      saveCurrentDay();
+      download("ares-datos.json", JSON.stringify(state, null, 2), "application/json");
+    }
+
+    function exportCsv() {
+      saveCurrentDay();
+      const headers = [
+        "day","date","score",
+        ...habits.map(h => h.id),
+        "arrival","sleep","english","savedMoney","spentMoney","weight","contentCount","bible","wins","fixes"
+      ];
+      const rows = state.days.map(d => {
+        const values = [
+          d.day, d.date, score(d),
+          ...habits.map(h => d.habits?.[h.id] ? "1" : "0"),
+          d.arrival, d.sleep, d.english, d.savedMoney, d.spentMoney, d.weight, d.contentCount, d.bible, d.wins, d.fixes
+        ];
+        return values.map(v => `"${String(v ?? "").replaceAll('"','""')}"`).join(",");
+      });
+      download("ares-datos.csv", [headers.join(","), ...rows].join("\n"), "text/csv");
+    }
+
+    function importJson(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const imported = normalizeState(JSON.parse(reader.result));
+          state = imported;
+          saveState();
+          selectedDay = 1;
+          buildDaySelect();
+          loadSelectedDay();
+          renderAll();
+          alert("Datos importados.");
+        } catch (e) {
+          alert("No se pudo importar el archivo.");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function resetAll() {
+      if (!confirm("Esto borrará todos los datos guardados en este navegador. ¿Continuar?")) return;
+      localStorage.removeItem(STORAGE_KEY);
+      state = loadState();
+      selectedDay = 1;
+      buildDaySelect();
+      loadSelectedDay();
+      renderAll();
+    }
+
+    function loadGhConfig() {
+      let cfg = {};
+      try { cfg = JSON.parse(localStorage.getItem(GH_CONFIG_KEY) || "{}"); } catch (e) {}
+      $("ghOwner").value = cfg.owner || "";
+      $("ghRepo").value = cfg.repo || "";
+      $("ghBranch").value = cfg.branch || "main";
+      $("ghPath").value = cfg.path || "data/ares-datos.json";
+      $("ghToken").value = sessionStorage.getItem(GH_SESSION_TOKEN_KEY) || "";
+    }
+
+    function currentGhConfig() {
+      return {
+        owner: $("ghOwner").value.trim(),
+        repo: $("ghRepo").value.trim(),
+        branch: $("ghBranch").value.trim() || "main",
+        path: $("ghPath").value.trim() || "data/ares-datos.json"
+      };
+    }
+
+    function saveGhConfig() {
+      const cfg = currentGhConfig();
+      localStorage.setItem(GH_CONFIG_KEY, JSON.stringify(cfg));
+      status(`Configuración guardada: ${cfg.owner}/${cfg.repo}/${cfg.path}`);
+    }
+
+    function saveTokenSession() {
+      const token = $("ghToken").value.trim();
+      if (!token) return status("Pega un token primero.");
+      sessionStorage.setItem(GH_SESSION_TOKEN_KEY, token);
+      status("Token guardado solo para esta sesión del navegador.");
+    }
+
+    function status(msg) {
+      $("syncStatus").textContent = msg;
+    }
+
+    function toBase64Unicode(str) {
+      const bytes = new TextEncoder().encode(str);
+      let binary = "";
+      bytes.forEach(b => binary += String.fromCharCode(b));
+      return btoa(binary);
+    }
+
+    function fromBase64Unicode(str) {
+      const binary = atob(str.replace(/\n/g, ""));
+      const bytes = Uint8Array.from(binary, c => c.charCodeAt(0));
+      return new TextDecoder().decode(bytes);
+    }
+
+    async function githubRequest(url, options = {}) {
+      const token = $("ghToken").value.trim() || sessionStorage.getItem(GH_SESSION_TOKEN_KEY) || "";
+      const headers = {
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+        ...(options.headers || {})
+      };
+      if (token) headers.Authorization = `Bearer ${token}`;
+      const res = await fetch(url, { ...options, headers });
+      const text = await res.text();
+      let data = null;
+      try { data = text ? JSON.parse(text) : null; } catch (e) { data = text; }
+      if (!res.ok) {
+        const msg = data?.message || text || `Error HTTP ${res.status}`;
+        throw new Error(msg);
+      }
+      return data;
+    }
+
+    async function getGithubFile(cfg) {
+      const url = `https://api.github.com/repos/${encodeURIComponent(cfg.owner)}/${encodeURIComponent(cfg.repo)}/contents/${cfg.path.split("/").map(encodeURIComponent).join("/")}?ref=${encodeURIComponent(cfg.branch)}`;
+      return await githubRequest(url);
+    }
+
+    async function pushToGithub() {
+      try {
+        saveCurrentDay();
+        const cfg = currentGhConfig();
+        if (!cfg.owner || !cfg.repo) return status("Falta usuario/owner o repositorio.");
+        const token = $("ghToken").value.trim() || sessionStorage.getItem(GH_SESSION_TOKEN_KEY) || "";
+        if (!token) return status("Para subir datos necesitas pegar tu token.");
+        saveGhConfig();
+
+        status("Buscando archivo actual en GitHub...");
+        let sha = undefined;
+        try {
+          const existing = await getGithubFile(cfg);
+          sha = existing.sha;
+        } catch (e) {
+          if (!String(e.message).toLowerCase().includes("not found")) throw e;
+        }
+
+        const content = JSON.stringify(state, null, 2);
+        const body = {
+          message: `Actualizar datos ARES ${new Date().toISOString().slice(0,10)}`,
+          content: toBase64Unicode(content),
+          branch: cfg.branch
+        };
+        if (sha) body.sha = sha;
+
+        const url = `https://api.github.com/repos/${encodeURIComponent(cfg.owner)}/${encodeURIComponent(cfg.repo)}/contents/${cfg.path.split("/").map(encodeURIComponent).join("/")}`;
+        status("Subiendo datos...");
+        await githubRequest(url, { method: "PUT", body: JSON.stringify(body), headers: { "Content-Type": "application/json" } });
+        status("Datos subidos a GitHub correctamente.");
+      } catch (e) {
+        status("No se pudo subir: " + e.message);
+      }
+    }
+
+    async function pullFromGithub() {
+      try {
+        const cfg = currentGhConfig();
+        if (!cfg.owner || !cfg.repo) return status("Falta usuario/owner o repositorio.");
+        saveGhConfig();
+
+        status("Cargando datos desde GitHub...");
+        const file = await getGithubFile(cfg);
+        const raw = fromBase64Unicode(file.content || "");
+        state = normalizeState(JSON.parse(raw));
+        saveState();
+        selectedDay = getTodayProjectDay();
+        buildDaySelect();
+        $("daySelect").value = selectedDay;
+        loadSelectedDay();
+        renderAll();
+        status("Datos cargados desde GitHub.");
+      } catch (e) {
+        status("No se pudo cargar: " + e.message);
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
