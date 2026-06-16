@@ -1,6 +1,6 @@
 {
   "startDate": "2026-06-15",
-  "lastUpdated": "2026-06-15T06:38:35.422Z",
+  "lastUpdated": "2026-06-16T05:22:26.473Z",
   "days": [
     {
       "day": 1,
@@ -9,22 +9,22 @@
         "body": false,
         "sugar": false,
         "purity": false,
-        "god": false,
+        "god": true,
         "englishHabit": false,
         "moneyHabit": false,
         "order": false,
-        "punctuality": false
+        "punctuality": true
       },
-      "arrival": "",
-      "sleep": "",
-      "english": "",
-      "savedMoney": "",
-      "spentMoney": "",
+      "arrival": "06:46",
+      "sleep": "23:21",
+      "english": "0",
+      "savedMoney": "0",
+      "spentMoney": "174",
       "weight": "",
       "contentCount": "",
-      "bible": "",
-      "wins": "",
-      "fixes": ""
+      "bible": "Salmos 1",
+      "wins": "Llegué temprano y cuide la ingesta adecuada de azúcar ",
+      "fixes": "No pude orar, ni entrenar,ni clase de inglés,ni ahorré "
     },
     {
       "day": 2,
